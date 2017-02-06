@@ -1,0 +1,21 @@
+#%RAML 0.8
+---
+title: Jukebox API
+baseUri: http://jukebox.api.com
+version: v1
+
+
+/relationships:
+  displayName: Relationships
+  get:
+    description: Get relationships
+    body:
+      application/json:
+        schema: |
+           {"$schema":"http://json-schema.org/draft-04/schema#","type":"object","properties":{"familyid":{"type":"string"},"relationship":{"type":"array","items":{"type":"object","properties":{"type":{"type":"string"},"id":{"type":"integer"}},"required":["type","id"]}}},"required":["familyid","relationship"]}
+           
+        
+        example: |
+          {
+            "input": "s3://zencodertesting/test.mov"
+          }
