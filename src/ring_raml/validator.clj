@@ -1,5 +1,7 @@
 (ns ring-raml.validator
-  (:require [ring-raml.matcher :as m])
+  (:require [ring-raml.matcher :as m]
+            [clojure.pprint :as pp])
+
   (:import [com.fasterxml.jackson.databind ObjectMapper]
            [com.github.fge.jsonschema.main JsonSchemaFactory]
            [com.github.fge.jsonschema.load.configuration LoadingConfiguration]
@@ -42,8 +44,21 @@
 (defn validate-json [ data schema ]
   "Validate json against json-schema")
 
+(defn request-not-defined [req raml]
+  {::error (str "Request resource is not defined in raml spec \n" (pp/pprint req))})
+
+(defn match-req [req raml]
+  "match request against raml def primary using uri"
+  (let [req_uri (:uri req)
+        req_method (:request-method req)]
+    ;;1 .one layer first
+    ;;2. return orignal req and matched def, or original req and error
+    (if-let [raml_def (get-in raml [req_uri req_method])]
+      raml_def
+      (request-not-defined req raml))))
+
 (defn validate-req [req raml]
-  (let [raml_def (m/match req raml)]
+  (let [raml_def (match-req req raml)]
 
     ))
 

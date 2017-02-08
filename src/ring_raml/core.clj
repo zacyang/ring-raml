@@ -1,7 +1,5 @@
 (ns ring-raml.core
-  (:use compojure.core)
-  (:require [compojure.route :as route]
-            [raml-clj-parser.core :as raml]
+  (:require [raml-clj-parser.core :as raml]
             [ring-raml.validator :as v]
             [cheshire.core :refer [generate-string]]))
 
@@ -17,3 +15,6 @@
         (invalid-raml-req-resp req))
       (let [app_resp (app req)]
         (v/validate-resp req app_resp (get-raml))))))
+
+
+;;(defn start-server [] (future (jetty/run-jetty (var middleware-app) {:port 8081})))

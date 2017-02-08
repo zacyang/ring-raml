@@ -8,16 +8,16 @@
   :author "Yang Yang"
 
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [ring/ring-core "1.5.0"]
-                 [ring/ring-jetty-adapter "1.5.0"]
-                 [compojure "1.5.2"]
                  [raml-clj-parser "0.1.0"]
                  [cheshire "5.3.0"]
                  [com.github.fge/json-schema-validator "2.1.7"]]
 
   :profiles {:dev {
                    :aliases        {"build" ["do" ["test"] ["kibit"] ]}
-                   :dependencies   [[midje "1.8.3"]]
+                   :dependencies   [[ring/ring-mock "0.3.0"]
+                                    [ring/ring-jetty-adapter "1.5.0"]
+                                    [ring/ring-core "1.5.0"]
+                                    [compojure "1.5.2"]]
                    :resource-paths ["src/test/resources"]
                    :plugins        [[lein-midje "3.2.1"]
                                     [lein-kibit "0.1.3"]

@@ -1,4 +1,4 @@
-# ring-raml
+# ring-raml [![Build Status](https://travis-ci.org/zacyang/ring-raml.svg?branch=master)](https://travis-ci.org/zacyang/ring-raml)
 
 A ring middleware that validates request/response according to RAML definition
 
