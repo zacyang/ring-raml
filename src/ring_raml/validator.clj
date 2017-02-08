@@ -26,7 +26,7 @@
 (defn validate
   [schema data]
   (let [parsed-schema (parse-to-node schema)
-        schema (-> json-schema-factory (.getJsonSchema parsed-schema))
+        schema (.getJsonSchema json-schema-factory  parsed-schema)
         parsed-data (parse-to-node data)
         report (.validate schema parsed-data)]
     {:success (.isSuccess report)
@@ -45,7 +45,7 @@
   "Validate json against json-schema")
 
 (defn request-not-defined [req raml]
-  {::error (str "Request resource is not defined in raml spec \n" (pp/pprint req))})
+  {::error (str "Request resource is not defined in raml spec " req)})
 
 (defn match-req [req raml]
   "match request against raml def primary using uri"

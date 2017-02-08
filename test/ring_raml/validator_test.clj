@@ -16,7 +16,7 @@
 
   (testing "req with wrong method returns error info"
     (let [req (-> (mock/request :get "/post-endpoint"))
-          error_info {:ring-raml.validator/error "Request resource is not defined in raml spec"}]
+          error_info {:ring-raml.validator/error (str "Request resource is not defined in raml spec " req)}]
       (is (= (sut/match-req req (get-raml)) error_info)))))
 
 (deftest valid-req
@@ -25,4 +25,4 @@
 
     ;;TODO:  (is (= (sut/validate-req req (get-raml)) req)))
 
-    ))
+    )))
