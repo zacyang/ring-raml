@@ -32,10 +32,10 @@
     {:success (.isSuccess report)
      :message (str report)}))
 
-(defn get-raml-def [req]
-  (let [req_uri (:uri req)
-        req_method (:request-method req)]
-    (get-in (get-raml) [req_uri req_method :body :application/json :schema])))
+;; (defn get-raml-def [req]
+;;   (let [req_uri (:uri req)
+;;         req_method (:request-method req)]
+;;     (get-in (get-raml) [req_uri req_method :body :application/json :schema])))
 
 (defn check-content [req resp]
   (let [raml_def_schema  (get-raml-def req)]
@@ -47,15 +47,29 @@
 (defn request-not-defined [req raml]
   {::error (str "Request resource is not defined in raml spec " req)})
 
+(defn- get-uri-path [req]
+  (vec (map (fn [s] (str "/" s))
+            (filter #(not (empty? %))
+                    (clojure.string/split (:uri req) #"/")))))
+
+(defn- get-req-raml-path [req]
+  (conj (get-uri-path req) (:request-method req)))
+
+(defn get-uri-parameter-sources [raml]
+  (let [uri_parameter_path (first  (filter #(when (string? %)
+                                             (re-find #"\{.+\}" %)) (keys raml)))]
+    (get raml uri_parameter_path)))
+
+(defn get-raml-def [path raml]
+  (if-let [raml_def (get  raml (first path))]
+    (get-raml-def (rest path) raml_def)
+    (get-uri-parameter-sources raml)))
+
 (defn match-req [req raml]
   "match request against raml def primary using uri"
-  (let [req_uri (:uri req)
-        req_method (:request-method req)]
-    ;;1 .one layer first
-    ;;2. return orignal req and matched def, or original req and error
-    (if-let [raml_def (get-in raml [req_uri req_method])]
-      raml_def
-      (request-not-defined req raml))))
+  (if-let [raml_def (get-raml-def (get-req-raml-path req) raml)]
+    raml_def
+    (request-not-defined req raml)))
 
 (defn validate-req [req raml]
   (let [raml_def (match-req req raml)]
