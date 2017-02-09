@@ -2,6 +2,8 @@
 
 A ring middleware that validates request/response according to RAML definition
 
+This libary is not ready for consume yet, but contributing is welcome.
+
 ## Features
 
 validate request
@@ -14,17 +16,17 @@ mock endpoint when no implementation found
 
 FIXME
 
-## Features
+## Roadmap
 
-Match request against RAML defination
+- Match request against RAML defination
 
-Validate request body/header/queryParameters against RAML
+- Validate request body/header/queryParameters against RAML
 
-Validate response from application server against RAML
+- Validate response from application server against RAML
 
-Serve as mock server
+- Serve as mock server
 
-Report missmatch in response
+- Report missmatch in response
 
 ## License
 

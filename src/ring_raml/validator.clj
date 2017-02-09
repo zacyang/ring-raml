@@ -37,9 +37,9 @@
 ;;         req_method (:request-method req)]
 ;;     (get-in (get-raml) [req_uri req_method :body :application/json :schema])))
 
-(defn check-content [req resp]
-  (let [raml_def_schema  (get-raml-def req)]
-    (validate raml_def_schema  (:body resp))))
+;; (defn check-content [req resp]
+;;   (let [raml_def_schema  (get-raml-def req)]
+;;     (validate raml_def_schema  (:body resp))))
 
 (defn validate-json [ data schema ]
   "Validate json against json-schema")
@@ -49,8 +49,7 @@
 
 (defn- get-uri-path [req]
   (vec (map (fn [s] (str "/" s))
-            (filter #(not (empty? %))
-                    (clojure.string/split (:uri req) #"/")))))
+            (remove empty? (clojure.string/split (:uri req) #"/")))))
 
 (defn- get-req-raml-path [req]
   (conj (get-uri-path req) (:request-method req)))
@@ -61,9 +60,10 @@
     (get raml uri_parameter_path)))
 
 (defn get-raml-def [path raml]
-  (if-let [raml_def (get  raml (first path))]
-    (get-raml-def (rest path) raml_def)
-    (get-uri-parameter-sources raml)))
+  (if (empty? path) raml
+      (if-let [raml_def (get  raml (first path))]
+        (get-raml-def (rest path) raml_def)
+        (get-uri-parameter-sources raml))))
 
 (defn match-req [req raml]
   "match request against raml def primary using uri"
