@@ -59,11 +59,15 @@
                                              (re-find #"\{.+\}" %)) (keys raml)))]
     (get raml uri_parameter_path)))
 
+(defn next-level-raml [raml path]
+  (if-let [raml_def (get  raml (first path))]
+    raml_def
+    (get-uri-parameter-sources raml)))
+
 (defn get-raml-def [path raml]
-  (if (empty? path) raml
-      (if-let [raml_def (get  raml (first path))]
-        (get-raml-def (rest path) raml_def)
-        (get-raml-def (rest path) (get-uri-parameter-sources raml)))))
+  (if (not-any? empty? [path raml])
+    (get-raml-def (rest path) (next-level-raml raml path))
+    raml))
 
 (defn match-req [req raml]
   "match request against raml def primary using uri"
