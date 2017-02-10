@@ -63,7 +63,7 @@
   (if (empty? path) raml
       (if-let [raml_def (get  raml (first path))]
         (get-raml-def (rest path) raml_def)
-        (get-uri-parameter-sources raml))))
+        (get-raml-def (rest path) (get-uri-parameter-sources raml)))))
 
 (defn match-req [req raml]
   "match request against raml def primary using uri"

@@ -8,6 +8,13 @@ baseUri: https://api.github.com
     uriParameters:
       userId:
         type: integer
+    get:
+      response:
+         200:
+           body:
+             application/text:
+               "bla"
+
     /followers:
     /following:
     /keys:
@@ -15,3 +22,9 @@ baseUri: https://api.github.com
         uriParameters:
           keyId:
             type: integer
+        get:
+          response:
+            200:
+              body:
+                application/text:
+                  "bla"
