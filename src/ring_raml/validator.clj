@@ -72,13 +72,15 @@
 (defn match-req [req raml]
   "match request against raml def primary using uri"
   (if-let [raml_def (get-raml-def (get-req-raml-path req) raml)]
-    raml_def
+    (::raml_def raml_def)
     (request-not-defined req raml)))
 
-(defn validate-req [req raml]
-  (let [raml_def (match-req req raml)]
+(defn validate-req-query-params [req raml])
 
-    ))
+(defn validate-req [req raml]
+  (if-let [raml_def (match-req req raml)]
+    (validate-req-query-params req raml)
+    (request-not-defined req raml)))
 
 (defn validate-resp[req resp raml])
 
