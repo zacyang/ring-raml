@@ -38,13 +38,21 @@
       (is (= (::sut/path match_result) ["/users" "/{userId}" "/keys" "/{keyId}" :get])))))
 
 (deftest valid-req
-  ;;TODO WIP
-  (testing "valid req should pass transparently back"
-    (let [req (-> (mock/request :get "/valid"))
+  (testing "valid get req path should pass transparently back"
+    (let [req (-> (mock/request :get "/get-endpoint"))
           raml (get-raml "test/resources/sample.raml")]
+      (is (= req (sut/validate-req req  raml )))))
+
+  (testing "valid get req with valid query parameter should transparently back "
+    (let [req (-> (mock/request :get "/users" "page=3&per_page=4"))
+          raml (get-raml "test/resources/query_parameters.raml")]
       (is (= req (sut/validate-req req  raml ))))))
 
 (deftest invalid-req
+  (testing "valid get req with valid query parameter should transparently back "
+    (let [req (-> (mock/request :get "/users" "page=a"))
+          raml (get-raml "test/resources/query_parameters.raml")]
+      (is (= req (sut/validate-req req  raml )))))
   ;; (testing "req with invalid query parameter"
   ;;   (let [req        (mock/request :get "/users" "page=abc" )
   ;;         raml       (get-raml "test/resources/query_parameters.raml")

@@ -64,6 +64,7 @@
    (if (not-any? empty? [req_uri_path raml])
      (let [[next_level_raml raml_path] (next-level-raml raml req_uri_path)]
        (get-raml-def (conj found_path raml_path)
+                     ;;TODO: depends the match type e.g /user /abc could match to /user and subordanate key /abc, it could also match /user/abc if key defined so, even it is not recommanded by the RAML community
                      (rest req_uri_path)
                      next_level_raml))
      {::path found_path
@@ -76,13 +77,19 @@
       matched_result
       (request-not-defined req raml))))
 
-(defn validate-req-query-params [req raml]
-  req)
+
+(defn validate-req-query-params [ match_result req raml]
+
+  (let [raml_def_query_params (get-in match_result [::raml_def :queryParameters])
+        req_query_params (:query-string req)]
+
+    ))
 
 (defn validate-req [req raml]
-  (if-let [raml_def (match-req req raml)]
-    (validate-req-query-params req raml)
-    (request-not-defined req raml)))
+  (let [match_result (match-req req raml)]
+    (if-not (contains? match_result ::error)
+      (validate-req-query-params match_result req raml)
+      (request-not-defined  req raml))))
 
 (defn validate-resp[req resp raml])
 
