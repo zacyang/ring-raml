@@ -32,15 +32,6 @@
     {:success (.isSuccess report)
      :message (str report)}))
 
-;; (defn get-raml-def [req]
-;;   (let [req_uri (:uri req)
-;;         req_method (:request-method req)]
-;;     (get-in (get-raml) [req_uri req_method :body :application/json :schema])))
-
-;; (defn check-content [req resp]
-;;   (let [raml_def_schema  (get-raml-def req)]
-;;     (validate raml_def_schema  (:body resp))))
-
 (defn validate-json [ data schema ]
   "Validate json against json-schema")
 
@@ -60,22 +51,27 @@
     [(get raml uri_parameter_path) uri_parameter_path]))
 
 (defn next-level-raml [raml path]
+  "Return [raml_defined matched_path_key] "
   (if-let [raml_def (get  raml (first path))]
     [raml_def (first path)]
     (get-uri-parameter-sources raml)))
 
-(defn get-raml-def [found_path req_uri_path raml]
-  (if (not-any? empty? [req_uri_path raml])
-    (let [[next_level_raml raml_path] (next-level-raml raml req_uri_path)]
-      (get-raml-def (conj found_path raml_path)
-                    (rest req_uri_path)
-                    next_level_raml))
-    {::path found_path
-     ::raml_def raml}))
+(defn get-raml-def
+  ([req_uri_path raml]
+   (get-raml-def [] req_uri_path raml))
+
+  ([found_path req_uri_path raml]
+   (if (not-any? empty? [req_uri_path raml])
+     (let [[next_level_raml raml_path] (next-level-raml raml req_uri_path)]
+       (get-raml-def (conj found_path raml_path)
+                     (rest req_uri_path)
+                     next_level_raml))
+     {::path found_path
+      ::raml_def raml})))
 
 (defn match-req [req raml]
   "match request against raml def primary using uri"
-  (let [matched_result (get-raml-def [] (get-req-raml-path req) raml)]
+  (let [matched_result (get-raml-def (get-req-raml-path req) raml)]
     (if-let [matched_raml (::raml_def matched_result)]
       matched_result
       (request-not-defined req raml))))
