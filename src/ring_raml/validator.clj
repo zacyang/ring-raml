@@ -1,11 +1,13 @@
 (ns ring-raml.validator
   (:require [ring-raml.matcher :as m]
-            [clojure.pprint :as pp])
+            [clojure.pprint :as pp]
+            [ring.middleware.params :as params])
 
   (:import [com.fasterxml.jackson.databind ObjectMapper]
            [com.github.fge.jsonschema.main JsonSchemaFactory]
            [com.github.fge.jsonschema.load.configuration LoadingConfiguration]
-           [com.github.fge.jsonschema.load.uri URITransformer]))
+           [com.github.fge.jsonschema.load.uri URITransformer]
+           [org.eclipse.jetty.util UrlEncoded MultiMap]))
 (defn get-raml[])
 (def json-schema-factory
   (let [transformer (-> (URITransformer/newBuilder)
@@ -79,11 +81,12 @@
 
 
 (defn validate-req-query-params [ match_result req raml]
-
   (let [raml_def_query_params (get-in match_result [::raml_def :queryParameters])
-        req_query_params (:query-string req)]
-
-    ))
+        req_query_params (:query-string req)
+        parameter_map (#(apply hash-map (clojure.string/split % #"="))  (java.net.URLDecoder/decode req_query_params))]
+    (when (every? #(= (get raml_def_query_params %)
+                     (get parameter_map %)) (keys parameter_map)))
+    req))
 
 (defn validate-req [req raml]
   (let [match_result (match-req req raml)]
